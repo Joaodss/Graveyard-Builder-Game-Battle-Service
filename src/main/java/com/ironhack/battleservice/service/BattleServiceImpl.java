@@ -63,11 +63,18 @@ public class BattleServiceImpl implements BattleService {
     }
 
 
-    public UserDTO updateUserExperienceAndGold(String username, Long experience, Long gold) {
+    public UserDTO addUserExperienceAndGold(String username, Long experience, Long gold) {
+        var user = getUserByUsername(username);
         var userStatsToUpdate = new UserDTO();
         userStatsToUpdate.setUsername(username);
-        userStatsToUpdate.setExperience(experience);
-        userStatsToUpdate.setGold(gold);
+        userStatsToUpdate.setExperience(experience != null ?
+                user.getExperience() + experience :
+                user.getExperience()
+        );
+        userStatsToUpdate.setGold(gold != null ?
+                user.getGold() + gold :
+                user.getGold()
+        );
         return userModelProxy.updateUser(username, userStatsToUpdate);
     }
 

@@ -13,6 +13,6 @@ public interface BattleController {
 
     CharacterDTO addExperience(String username, Long id, Long experience);
 
-    UserDTO updateUserExperienceAndGold(String username, Long experience, Long gold);
+    UserDTO addUserExperienceAndGold(String username, Long experience, Long gold);
 
 }

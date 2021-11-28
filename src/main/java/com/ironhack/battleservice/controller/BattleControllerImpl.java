@@ -58,11 +58,11 @@ public class BattleControllerImpl implements BattleController {
 
     @PutMapping("/addGoldAndExperience")
     @ResponseStatus(OK)
-    public UserDTO updateUserExperienceAndGold(@RequestHeader("username") String username,
-                                               @RequestParam Long experience,
-                                               @RequestParam Long gold) {
+    public UserDTO addUserExperienceAndGold(@RequestHeader("username") String username,
+                                               @RequestParam(required = false) Long experience,
+                                               @RequestParam(required = false) Long gold) {
         log.info("Adding experience and gold to user: {}", username);
-        return battleService.updateUserExperienceAndGold(username, experience, gold);
+        return battleService.addUserExperienceAndGold(username, experience, gold);
     }
 
 }
