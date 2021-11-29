@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "user-model-service", path = "/api/v1/users", decode404 = true)
+@FeignClient(name = "user-model-service", path = "/api/v1/users")
 public interface UserModelProxy {
 
     @GetMapping("/username/{username}")

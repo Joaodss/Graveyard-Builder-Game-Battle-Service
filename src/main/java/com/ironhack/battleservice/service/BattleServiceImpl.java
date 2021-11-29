@@ -50,7 +50,6 @@ public class BattleServiceImpl implements BattleService {
         throw new IllegalArgumentException("Dont have access to this character");
     }
 
-
     public CharacterDTO addExperience(String username, Long id, Long experience) {
         var character = characterModelProxy.getCharacterById(id);
         if (character.getUserUsername().equals(username)) {
@@ -61,7 +60,6 @@ public class BattleServiceImpl implements BattleService {
         }
         throw new IllegalArgumentException("Dont have access to this character");
     }
-
 
     public UserDTO addUserExperienceAndGold(String username, Long experience, Long gold) {
         var user = getUserByUsername(username);
@@ -79,7 +77,7 @@ public class BattleServiceImpl implements BattleService {
     }
 
 
-    public UserDTO getUserByUsername(String username) {
+    private UserDTO getUserByUsername(String username) {
         log.info("Getting user by username {}", username);
         return userModelProxy.getUserByUsername(username).getBody();
     }
