@@ -56,7 +56,7 @@ public class BattleControllerImpl implements BattleController {
         }
     }
 
-    @PutMapping("/addGoldAndExperience")
+    @PutMapping("/addUserExperienceAndGold")
     @ResponseStatus(OK)
     public UserDTO addUserExperienceAndGold(@RequestHeader("username") String username,
                                             @RequestParam(required = false) Long experience,
