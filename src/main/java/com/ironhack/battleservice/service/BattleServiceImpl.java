@@ -35,7 +35,7 @@ public class BattleServiceImpl implements BattleService {
             if (health > character.getMaxHealth()) {
                 statsToUpdate.setCurrentHealth(character.getMaxHealth());
                 log.info("Health is greater than max health, setting health to max health");
-            } else if (health < 0) {
+            } else if (health <= 0) {
                 statsToUpdate.setCurrentHealth(0);
                 statsToUpdate.setIsAlive(false);
                 statsToUpdate.setDeathTime(Instant.now().toString());
