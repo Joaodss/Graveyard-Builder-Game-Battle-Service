@@ -1,6 +1,7 @@
 package com.ironhack.battleservice.service;
 
 import com.ironhack.battleservice.dto.CharacterDTO;
+import com.ironhack.battleservice.dto.OpponentDTO;
 import com.ironhack.battleservice.dto.UserDTO;
 import com.ironhack.battleservice.proxy.CharacterModelProxy;
 import com.ironhack.battleservice.proxy.OpponentSelectionProxy;
@@ -10,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,10 +21,22 @@ public class BattleServiceImpl implements BattleService {
     private final OpponentSelectionProxy opponentSelectionProxy;
 
 
-    public List<CharacterDTO> getOpponentsByUserLevel(String username) {
+    public OpponentDTO getOpponentsByUserLevel(String username) {
         log.info("Getting opponents by user level, for user: {}", username);
-        var user = getUserByUsername(username);
-        return opponentSelectionProxy.getOpponents(user.getPartyLevel());
+        var realPartyLevel = updatePartyLevelAndGetReal(username);
+        log.info("Real party level is {}", realPartyLevel);
+        // Get opponents that are not the current user.
+        var opponents = opponentSelectionProxy.getOpponents(realPartyLevel);
+        int maxToError = 0;
+        while (opponents.get(0).getUserUsername().equals(username)) {
+            if (maxToError > 10) throw new IllegalArgumentException("Error getting opponents. Only user was found.");
+            log.info("Opponent is the same as user, getting new opponent");
+            opponents = opponentSelectionProxy.getOpponents(realPartyLevel);
+            maxToError++;
+        }
+        // Get opponent information
+        var opponentDetails = getUserByUsername(opponents.get(0).getUserUsername());
+        return new OpponentDTO(opponentDetails.getUsername(), opponentDetails.getProfilePictureUrl(), opponents);
     }
 
     public CharacterDTO updateHealth(String username, Long id, Integer health) {
@@ -51,6 +63,7 @@ public class BattleServiceImpl implements BattleService {
     }
 
     public CharacterDTO addExperience(String username, Long id, Long experience) {
+        log.info("Adding experience to character with id {}", id);
         var character = characterModelProxy.getCharacterById(id);
         if (character.getUserUsername().equals(username)) {
             var statsToUpdate = new CharacterDTO();
@@ -62,6 +75,7 @@ public class BattleServiceImpl implements BattleService {
     }
 
     public UserDTO addUserExperienceAndGold(String username, Long experience, Long gold) {
+        log.info("Adding experience and gold to user with username {}", username);
         var user = getUserByUsername(username);
         var userStatsToUpdate = new UserDTO();
         userStatsToUpdate.setUsername(username);
@@ -80,6 +94,16 @@ public class BattleServiceImpl implements BattleService {
     private UserDTO getUserByUsername(String username) {
         log.info("Getting user by username {}", username);
         return userModelProxy.getUserByUsername(username).getBody();
+    }
+
+    private int updatePartyLevelAndGetReal(String username) {
+        var userParty = characterModelProxy.getCharactersByUserUsernameActive(username);
+        int partyLevel = userParty.stream().mapToInt(CharacterDTO::getLevel).sum();
+        var statsToUpdate = new UserDTO();
+        statsToUpdate.setUsername(username);
+        statsToUpdate.setPartyLevel(partyLevel);
+        userModelProxy.updateUser(username, statsToUpdate);
+        return partyLevel + (10 - userParty.size());
     }
 
 }

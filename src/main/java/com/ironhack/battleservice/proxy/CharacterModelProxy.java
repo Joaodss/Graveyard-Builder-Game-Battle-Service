@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.List;
+
 @FeignClient(value = "character-model-service", path = "/api/v1/characters")
 public interface CharacterModelProxy {
 
@@ -15,5 +17,8 @@ public interface CharacterModelProxy {
 
     @PutMapping("/update")
     CharacterDTO updateCharacter(@RequestBody CharacterDTO updateCharacterDTO);
+
+    @GetMapping("/party/{username}")
+    List<CharacterDTO> getCharactersByUserUsernameActive(@PathVariable String username);
 
 }

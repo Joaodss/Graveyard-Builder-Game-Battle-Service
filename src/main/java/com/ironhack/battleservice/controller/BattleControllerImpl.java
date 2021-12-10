@@ -1,6 +1,7 @@
 package com.ironhack.battleservice.controller;
 
 import com.ironhack.battleservice.dto.CharacterDTO;
+import com.ironhack.battleservice.dto.OpponentDTO;
 import com.ironhack.battleservice.dto.UserDTO;
 import com.ironhack.battleservice.service.BattleService;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class BattleControllerImpl implements BattleController {
 
     @GetMapping("/opponents")
     @ResponseStatus(OK)
-    public List<CharacterDTO> getOpponents(@RequestHeader("username") String username) {
+    public OpponentDTO getOpponents(@RequestHeader("username") String username) {
         log.info("Getting opponents for user: {}", username);
         return battleService.getOpponentsByUserLevel(username);
     }
